@@ -64,7 +64,6 @@ input -> retrieve memory -> build prompt -> call model -> save response -> retur
 
 import os
 import json
-import copy
 from groq import Groq
 import gradio as gr
 from dotenv import load_dotenv
@@ -99,7 +98,6 @@ def load_memory():
    except:
       return []
 
-
 def save_memory(memory):
    with open(file, "w") as f:
       json.dump(memory, f)
@@ -112,26 +110,22 @@ def get_recent_history(memory, count):
    return memory[-count:]
     
 def build_message(prompt):
-   chat_memory = load_memory()
-   chat_memory_copy = copy.deepcopy(chat_memory)
-   print(chat_memory_copy)
-   for item in chat_memory_copy:
-      item.pop("timestamp", None)
-   print(chat_memory_copy)
-   chat_memory_copy = get_recent_history(chat_memory_copy, 6)
-
    profile_memory = load_profile()
    memory_seed_memory = load_memory_seed()
 
-   chat_memory_copy.append({
+   chat_memory = load_memory()
+   chat_memory = get_recent_history(chat_memory, 6)
+   chat_memory.append({
         "role": "user",
         "content": prompt
     })
 
+   system_behaviour = "You are a funny teacher. You gives solutions while adding some jokes into your answer whenever possible."
+
    messages = [
       {
          "role": "system",
-         "content": f"User profile:\n{profile_memory}\nUser data:\n{memory_seed_memory}"
+         "content": f"User profile:\n{profile_memory}\nUser information:\n{memory_seed_memory}\nYour Behaviour:\n{system_behaviour}"
       }
    ]
    messages.extend(chat_memory)
@@ -149,9 +143,13 @@ def chat_bot(prompt, history):
    reply = chat_completion.choices[0].message.content
    messages.append({
         "role": "assistant",
-        "content": reply,
-        "timestamp" : datetime.now(ZoneInfo("Asia/Singapore"))
+        "content": reply
     })
+   '''
+   messages.append({
+      "timestamp" : datetime.now(ZoneInfo("Asia/Singapore")).isoformat()
+   })
+   '''
    save_memory(messages)
 
    return reply
