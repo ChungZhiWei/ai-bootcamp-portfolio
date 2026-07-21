@@ -1,0 +1,11 @@
+============================================================
+STUDENT NAME      
+: Chung Zhi Wei
+LAB ASSIGNMENT    
+: Lab 01
+============================================================
+[GITHUB REPOSITORY LINK]
+https://github.com/ChungZhiWei/ai-bootcamp-portfolio/tree/f177f680c990d8ad58c7571aac125bff37e59554/day7/Lab01
+[STREAMLIT LIVE APPLICATION LINK]
+https://ai-bootcamp-portfolio-day7lab1.streamlit.app/
+============================================================
