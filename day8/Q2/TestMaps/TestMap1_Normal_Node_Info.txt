@@ -1,0 +1,17 @@
+# TestMap1_Normal_Node_Info.txt
+# Purpose: Simple, fully connected graph. No disconnected nodes, no tie paths.
+# Format:
+# NodeID  X   Y   TypeID  Name
+#
+# TypeID:
+# 0 = School
+# 1 = Shop
+# 2 = Mall
+# 3 = HDB / Residential
+# 4 = Park / Open Area
+
+0   10   10   0   Test_School
+1   30   10   1   Test_Shop
+2   50   10   2   Test_Mall
+3   30   30   3   Test_HDB
+4   50   30   4   Test_Park

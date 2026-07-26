@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Paths</title>
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 30px auto; color: #222; }
+        h1 { font-size: 1.4rem; }
+        nav { margin-bottom: 16px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 14px; }
+        th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; font-size: 0.92rem; }
+        th { background: #f4f4f4; }
+        .actions a, .actions button {
+            font-size: 0.85rem; margin-right: 6px; cursor: pointer;
+            border: none; background: none; color: #2b6cb0; text-decoration: underline; padding: 0;
+        }
+        .actions button.delete { color: #a11; }
+        .add-btn {
+            display: inline-block; margin-top: 14px; padding: 8px 14px;
+            background: #2b6cb0; color: white; text-decoration: none; border-radius: 6px;
+        }
+        .result { margin: 10px 0; padding: 10px 14px; background: #e6f4ea; border-radius: 6px; font-size: 0.92rem; }
+        .result.error { background: #fde2e2; color: #a11; }
+    </style>
+</head>
+<body>
+    <h1>Manage Paths</h1>
+    <nav>
+        <a href="/">Map</a> &nbsp;|&nbsp;
+        <a href="/nodes">Manage Nodes</a> &nbsp;|&nbsp;
+        <a href="/edges">Manage Paths</a> &nbsp;|&nbsp;
+        {% if session.logged_in %}
+            <span style="color:#666;">Logged in as {{ session.username }}</span> &nbsp;|&nbsp;
+            <a href="{{ url_for('auth.logout') }}">Log Out</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">Log In</a>
+        {% endif %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="result {% if category == 'error' %}error{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <table>
+        <tr>
+            <th>Edge ID</th><th>Node A</th><th>Node B</th><th>Distance</th><th>Actions</th>
+        </tr>
+        {% for edge_id, edge in edges %}
+        <tr>
+            <td>{{ edge_id }}</td>
+            <td>{{ edge.a }}{% if edge.a in nodes_data %} ({{ nodes_data[edge.a].name }}){% endif %}</td>
+            <td>{{ edge.b }}{% if edge.b in nodes_data %} ({{ nodes_data[edge.b].name }}){% endif %}</td>
+            <td>{{ edge.distance }}</td>
+            <td class="actions">
+                <a href="{{ url_for('edit_edge', edge_id=edge_id) }}">Edit</a>
+                <form method="post" action="{{ url_for('delete_edge', edge_id=edge_id) }}"
+                      style="display:inline"
+                      onsubmit="return confirm('Delete path {{ edge_id }}?');">
+                    <button type="submit" class="delete">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a class="add-btn" href="{{ url_for('add_edge') }}">+ Add Path</a>
+</body>
+</html>

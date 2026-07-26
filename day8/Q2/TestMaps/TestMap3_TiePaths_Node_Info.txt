@@ -1,0 +1,22 @@
+# TestMap3_TiePaths_Node_Info.txt
+# Purpose: Diamond-shaped graph where two distinct routes from
+#          Node 0 to Node 3 have the exact same total distance (220).
+#          Route A: 0 -> 1 -> 3  (100 + 120 = 220)
+#          Route B: 0 -> 2 -> 3  (110 + 110 = 220)
+#          Use this to test tie-breaking behaviour (first found, lowest
+#          NodeID, shortest hop count, etc.) rather than assuming a
+#          single "correct" path exists.
+# Format:
+# NodeID  X   Y   TypeID  Name
+#
+# TypeID:
+# 0 = School
+# 1 = Shop
+# 2 = Mall
+# 3 = HDB / Residential
+# 4 = Park / Open Area
+
+0   10   30   0   Tie_Start_School
+1   30   10   1   Tie_Upper_Shop
+2   30   50   2   Tie_Lower_Mall
+3   50   30   3   Tie_End_HDB

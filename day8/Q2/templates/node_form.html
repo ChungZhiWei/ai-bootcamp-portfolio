@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ 'Edit' if node else 'Add' }} Node</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 30px auto; color: #222; }
+        h1 { font-size: 1.4rem; }
+        nav { margin-bottom: 16px; }
+        label { display: block; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
+        input, select { width: 100%; padding: 6px 8px; font-size: 0.95rem; margin-top: 4px; box-sizing: border-box; }
+        button { margin-top: 18px; padding: 8px 16px; background: #2b6cb0; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .cancel { margin-left: 10px; color: #555; text-decoration: none; }
+        .result { margin: 10px 0; padding: 10px 14px; background: #fde2e2; color: #a11; border-radius: 6px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <h1>{{ 'Edit Node ' ~ node_id if node else 'Add Node' }}</h1>
+    <nav>
+        <a href="/">Map</a> &nbsp;|&nbsp;
+        <a href="/nodes">Manage Nodes</a> &nbsp;|&nbsp;
+        <a href="/edges">Manage Paths</a> &nbsp;|&nbsp;
+        {% if session.logged_in %}
+            <span style="color:#666;">Logged in as {{ session.username }}</span> &nbsp;|&nbsp;
+            <a href="{{ url_for('auth.logout') }}">Log Out</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">Log In</a>
+        {% endif %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="result">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="post">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" value="{{ node.name if node else '' }}" required>
+
+        <label for="x">X</label>
+        <input type="number" step="any" id="x" name="x" value="{{ node.x if node else '' }}" required>
+
+        <label for="y">Y</label>
+        <input type="number" step="any" id="y" name="y" value="{{ node.y if node else '' }}" required>
+
+        <label for="type_id">Type</label>
+        <select id="type_id" name="type_id" required>
+            {% for tid, style in type_style.items() %}
+                <option value="{{ tid }}" {% if node and node.type_id == tid %}selected{% endif %}>
+                    {{ tid }} - {{ style[0] }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">{{ 'Save Changes' if node else 'Add Node' }}</button>
+        <a class="cancel" href="{{ url_for('list_nodes') }}">Cancel</a>
+    </form>
+</body>
+</html>

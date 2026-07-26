@@ -1,0 +1,19 @@
+# TestMap2_Disconnected_Graph_Path.txt
+# Purpose: Two separate components. Nodes 5 and 6 are connected to each
+#          other but have no edge to nodes 0-4. Any query between the
+#          two groups (e.g. 0 -> 5) should have no valid path.
+# Format:
+# EdgeID  NodeA  NodeB  Distance
+#
+# Notes:
+# - Edges are undirected.
+# - Distance is the pathfinding cost.
+
+0    0    1    100
+1    1    2    100
+2    1    3    120
+3    2    4    100
+4    3    4    110
+
+# --- Isolated component: no edge connects (5,6) to (0-4) ---
+5    5    6    90

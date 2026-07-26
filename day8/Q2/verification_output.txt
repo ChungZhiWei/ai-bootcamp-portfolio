@@ -1,0 +1,61 @@
+[PASS] TC1 - Normal shortest path
+    Input:    GET /?start=0&destination=3
+    Expected: path=[0, 1, 2, 3], distance=360.0
+    Actual:   status=200, path=[0, 1, 2, 3], distance=360.0
+
+[PASS] TC2 - Start node equals end node
+    Input:    GET /?start=5&destination=5
+    Expected: path=[5], distance=0.0 (trivial zero-length path)
+    Actual:   status=200, path=[5], distance=0.0
+
+[PASS] TC3 - Invalid start node
+    Input:    GET /?start=9999&destination=3
+    Expected: Start node: 9999 is invalid.
+    Actual:   status=200, error='Start node: 9999 is invalid.'
+
+[PASS] TC4 - Invalid destination node
+    Input:    GET /?start=0&destination=9999
+    Expected: End node: 9999 is invalid.
+    Actual:   status=200, error='End node: 9999 is invalid.'
+
+[PASS] TC6 - Map with multiple possible paths (true shortest must win)
+    Input:    GET /?start=0&destination=8
+    Expected: path=[0, 1, 7, 8], distance=470.0
+    Actual:   status=200, path=[0, 1, 7, 8], distance=470.0
+
+[PASS] TC5 - Disconnected graph / unreachable destination
+    Input:    GET /?start=0&destination=16  (node 16 exists but is only connected to isolated node 17, which has no link to the main graph)
+    Expected: No Path Exists
+    Actual:   status=200, error='No Path Exists'
+
+[PASS] TC7a - Map-editing route (GET /nodes) rejected for unauthenticated user
+    Input:    GET /nodes with no logged-in session
+    Expected: 302 redirect to /login (access denied)
+    Actual:   status=302, Location=/login?next=/nodes
+
+[PASS] TC7b - Map-editing route (POST /nodes/add) rejected for unauthenticated user
+    Input:    POST /nodes/add with no logged-in session
+    Expected: 302 redirect to /login, no node created
+    Actual:   status=302, Location=/login?next=/nodes/add
+
+[PASS] TC8 - Public pathfinding works without authentication
+    Input:    GET /?start=0&destination=3 with no session cookie
+    Expected: 200 OK, page renders the computed path without requiring login
+    Actual:   status=200, contains_result=True
+
+Text report written to: d:\ai-bootcamp-portfolio\day8\Q2\verification_report.txt
+
+========================================================================
+VERIFICATION SUMMARY
+========================================================================
+TC1    [PASS] Normal shortest path
+TC2    [PASS] Start node equals end node
+TC3    [PASS] Invalid start node
+TC4    [PASS] Invalid destination node
+TC6    [PASS] Map with multiple possible paths (true shortest must win)
+TC5    [PASS] Disconnected graph / unreachable destination
+TC7a   [PASS] Map-editing route (GET /nodes) rejected for unauthenticated user
+TC7b   [PASS] Map-editing route (POST /nodes/add) rejected for unauthenticated user
+TC8    [PASS] Public pathfinding works without authentication
+========================================================================
+RESULT: SUCCESS - all test cases passed.

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log In</title>
+    <style>
+        body { font-family: sans-serif; max-width: 380px; margin: 80px auto; color: #222; }
+        h1 { font-size: 1.4rem; }
+        label { display: block; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
+        input { width: 100%; padding: 8px; font-size: 0.95rem; margin-top: 4px; box-sizing: border-box; }
+        button {
+            margin-top: 18px; padding: 8px 16px; width: 100%;
+            background: #2b6cb0; color: white; border: none; border-radius: 6px;
+            cursor: pointer; font-size: 0.95rem;
+        }
+        .result { margin: 10px 0; padding: 10px 14px; border-radius: 6px; font-size: 0.9rem; }
+        .result.success { background: #e6f4ea; }
+        .result.error { background: #fde2e2; color: #a11; }
+        a { color: #2b6cb0; }
+    </style>
+</head>
+<body>
+    <h1>Log In</h1>
+    <p style="font-size:0.85rem;color:#666;">Sign in to add, edit, or delete nodes and paths.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="result {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="post">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autofocus>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Log In</button>
+    </form>
+
+    <p style="margin-top: 20px;"><a href="/">&larr; Back to map (view-only, no login needed)</a></p>
+</body>
+</html>

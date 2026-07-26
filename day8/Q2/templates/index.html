@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Node Map</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 1000px;
+            margin: 30px auto;
+            color: #222;
+        }
+        h1 {
+            font-size: 1.4rem;
+        }
+        form {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        select, button {
+            padding: 6px 10px;
+            font-size: 0.95rem;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px 14px;
+            background: #f4f4f4;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        .error {
+            background: #fde2e2;
+            color: #a11;
+        }
+        .map-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <h1>Node Map</h1>
+    <nav>
+        <a href="/">Map</a> &nbsp;|&nbsp;
+        <a href="/nodes">Manage Nodes</a> &nbsp;|&nbsp;
+        <a href="/edges">Manage Paths</a> &nbsp;|&nbsp;
+        {% if session.logged_in %}
+            <span style="color:#666;">Logged in as {{ session.username }}</span> &nbsp;|&nbsp;
+            <a href="{{ url_for('auth.logout') }}">Log Out</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">Log In</a>
+        {% endif %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="result {% if category == 'error' %}error{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="get" action="/">
+        <label for="start">Start:</label>
+        <select name="start" id="start">
+            <option value="">-- select --</option>
+            {% for node_id, node in nodes %}
+                <option value="{{ node_id }}" {% if start == node_id %}selected{% endif %}>
+                    {{ node_id }} - {{ node.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="destination">Destination:</label>
+        <select name="destination" id="destination">
+            <option value="">-- select --</option>
+            {% for node_id, node in nodes %}
+                <option value="{{ node_id }}" {% if destination == node_id %}selected{% endif %}>
+                    {{ node_id }} - {{ node.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Find shortest path</button>
+    </form>
+
+    {% if error %}
+        <div class="result error">{{ error }}</div>
+    {% elif highlight_path %}
+        <div class="result">
+            {{ message | safe}}
+        </div>
+    {% endif %}
+
+    <div class="map-container">
+        {{ svg_markup | safe }}
+    </div>
+</body>
+</html>
