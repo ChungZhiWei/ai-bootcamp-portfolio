@@ -6,10 +6,14 @@ Tile indexing (34 "playing" tile kinds, flowers are separate/bonus):
   27-33 : Honors: East, South, West, North, Red, Green, White
 """
 import os
-from groq import Groq
+from groq import Groq, APIStatusError, APIConnectionError, APIError
 from dotenv import load_dotenv
 
-import prompts
+from prompts import (
+    SYSTEM_PROMPT,
+    ADVICE_USER_PROMPT,
+    build_analyze_user_hand_prompt,
+)
 
 load_dotenv()
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
@@ -59,13 +63,13 @@ def extract_hand_info_for_chatbot(hand, bonus):
 # Call chatbot
 # ---------------------------------------------------------------------------
 def random_advice():
-   return chat_bot(build_message(prompts.ADVICE_USER_PROMPT, prompts.SYSTEM_PROMPT))
+   return chat_bot(build_message(ADVICE_USER_PROMPT, SYSTEM_PROMPT))
 
 def advice_hand(hand, bonus, min_points, allow_7pairs, allow_13orphans, allow_peaceful):
     return chat_bot(build_message(
-        prompts.build_analyze_user_hand_prompt(
+        build_analyze_user_hand_prompt(
             extract_hand_info_for_chatbot(hand, bonus),
-            min_points, allow_7pairs, allow_13orphans, allow_peaceful)))
+            min_points, allow_7pairs, allow_13orphans, allow_peaceful)), SYSTEM_PROMPT)
 
 # ---------------------------------------------------------------------------
 # Chatbot core functions
@@ -92,9 +96,17 @@ def build_message(user_prompt, system_prompt = None):
     return messages
 
 def chat_bot(prompt, history = None):
-    chat_completion = client.chat.completions.create(
-        messages = prompt,
-        model = "openai/gpt-oss-120b"#"llama-3.3-70b-versatile"#"llama-3.1-8b-instant"
-    )
-
-    return  chat_completion.choices[0].message.content
+    try:
+        chat_completion = client.chat.completions.create(
+            model = "openai/gpt-oss-120b",
+            messages = prompt,
+        )
+        return  chat_completion.choices[0].message.content
+    except APIStatusError as e:
+        return f"API failed with status code {e.status_code}: {e.message}"
+    except APIConnectionError:
+        return "Failed to connect to the Groq server."
+    except APIError as e:
+        return f"An general Groq API error occurred: {e}"
+    except Exception as e:
+        return f"An unexpected error occurred: {e}"

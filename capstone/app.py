@@ -17,6 +17,10 @@ if "bonus" not in st.session_state:
     st.session_state.bonus = [0] * 2
 if "advice" not in st.session_state:
     st.session_state.advice = random_advice()
+if "processing" not in st.session_state:
+    st.session_state.processing = False
+if "analysis_result" not in st.session_state:
+    st.session_state.analysis_result = None
 
 # ---------------------------------------------------------------------------
 # Sidebar settings
@@ -113,16 +117,30 @@ if total_hand_tiles not in (13, 14):
         f"You currently have **{total_hand_tiles}** tiles counted (flowers excluded). "
     )
 
-analyze = st.button("🔍 Analyze Hand", type="primary", use_container_width=True)
+analyze = st.button("🔍 Analyze Hand", type="primary", 
+                    use_container_width=True, disabled=st.session_state.processing)
 
 # ---------------------------------------------------------------------------
-# Analysis
+# Analyze Hand
 # ---------------------------------------------------------------------------
 
-if analyze:
+if analyze and not st.session_state.processing:
     if total_hand_tiles == 0:
         st.warning("Add some tiles to your hand first!")
     elif total_hand_tiles == 13 or total_hand_tiles == 14:
-        st.write(advice_hand(counts, bonus, min_points, allow_7pairs, allow_13orphans, allow_peaceful))
+        st.session_state.processing = True
+        st.session_state.analysis_result = None
+        st.rerun()
     else:
         st.info("This section only runs for 13 or 14 tile hands.")
+        
+if st.session_state.processing:
+    with st.spinner("Analyzing your hand..."):
+        st.session_state.analysis_result = advice_hand(
+            counts, bonus, min_points, allow_7pairs, allow_13orphans, allow_peaceful
+        )
+    st.session_state.processing = False
+    st.rerun()  # final rerun to re-enable the button and show the result
+
+if st.session_state.analysis_result:
+    st.write(st.session_state.analysis_result)
